@@ -12,17 +12,22 @@ namespace DefaultNamespace
 {
     public class FileChecker : MonoBehaviour
     {
-        private const string RepoPath = @"C:\YR_Software\yr_Builds\c-and-a-yrd";
-        private const string CsvFilePath = @"C:\YR\CandA\AssetInfo\asset_info.csv";
+        private string _repoPath = "";
+        private string _csvFilePath = "";
 
-        private void Start()
+        public void InputValueRepoPath(string path)
         {
-            CheckFiles();
+            _repoPath = path;
         }
 
-        private void CheckFiles()
+        public void InputValueCsvPath(string path)
         {
-            var csvFileList = LoadCsvFileViaPath(CsvFilePath);
+            _csvFilePath = path;
+        }
+
+        public void CheckFiles()
+        {
+            var csvFileList = LoadCsvFileViaPath(_csvFilePath);
 
             if (csvFileList.Count == 0)
             {
@@ -38,7 +43,7 @@ namespace DefaultNamespace
             }
             
             var artworkNameList = GetArtworkNameList(csvFileList, artworkIndex);
-            var files = GetRepositoryFileNames(RepoPath, "*.png");
+            var files = GetRepositoryFileNames(_repoPath, "*.png");
 
             for (int i = 0; i < files.Length; i++)
             {
