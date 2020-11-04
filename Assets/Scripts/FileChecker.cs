@@ -12,6 +12,8 @@ namespace DefaultNamespace
 {
     public class FileChecker : MonoBehaviour
     {
+        public static DropdownModule.Project ProjectSelected = DropdownModule.Project.Default;
+        
         private string _repoPath = "";
         private string _csvFilePath = "";
         private string _columnHeader = "";
@@ -103,7 +105,15 @@ namespace DefaultNamespace
             }
             
             var content = FindSingleObjectByName("ContentArtwork");
-            DestroyImmediate(content.transform.GetChild(0).gameObject, true);
+            foreach (Transform child in content.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            var defaultImageTypes = new[]
+            {
+                "_MSK", "_PRN", "_SCR", "_THM"
+            };
 
             var textGameObj = Resources.Load<GameObject>("Prefabs/ArtworkCheckerTextTemplate");
             for (int i = 0; i < artworkNameList.Count; i++)
@@ -111,10 +121,17 @@ namespace DefaultNamespace
                 var artworkName = artworkNameList[i].Split(',')[0];
                 textGameObj.GetComponent<TMP_Text>().text = artworkName + ": ";
 
-                CheckArtwork(files, artworkNameList, i, textGameObj, "_MSK");
-                CheckArtwork(files, artworkNameList, i, textGameObj, "_PRN");
-                CheckArtwork(files, artworkNameList, i, textGameObj, "_SCR");
-                CheckArtwork(files, artworkNameList, i, textGameObj, "_THM");
+                if (ProjectSelected == DropdownModule.Project.Default)
+                {
+                    for (int j = 0; j < defaultImageTypes.Length; j++)
+                    {
+                        CheckArtwork(ProjectSelected, files, artworkNameList, i, textGameObj, defaultImageTypes[j]);
+                    }
+                }
+                if (ProjectSelected == DropdownModule.Project.Levis)
+                {
+                    CheckArtwork(ProjectSelected, files, artworkNameList, i, textGameObj, ".PNG");
+                }
 
                 var subCategory = artworkNameList[i].Split(',')[1];
                 textGameObj.GetComponent<TMP_Text>().text += " " + "(" + subCategory + ")";
@@ -152,7 +169,10 @@ namespace DefaultNamespace
             {
                 var split = csvFileList[i].Split(',');
                 var artworkName = split[artworkIndex];
-                var subCategory = split[subCategoryIndex];
+                var subCategory = "";
+                if (subCategoryIndex != -1)
+                    subCategory = split[subCategoryIndex];
+    
                 if (artworkName == _columnHeader)
                     continue;
 
@@ -212,13 +232,22 @@ namespace DefaultNamespace
             return objects.Length == 0 ? null : objects[0];
         }
 
-        private void CheckArtwork(string[] files, List<string> artworkNameList, int i, GameObject textGameObj, string imageType)
+        private void CheckArtwork(DropdownModule.Project project, string[] files, List<string> artworkNameList, int i, GameObject textGameObj, string imageType)
         {
             var artworkNameSplit = artworkNameList[i].Split(',');
             var artworkName = artworkNameSplit[0];
-            var filesWithCurrentArtworkName = files.Select(x => x).Where(x => x == artworkName + imageType).ToArray();
+            var filesWithCurrentArtworkName = new List<string>();
+            switch (project)
+            {
+                case DropdownModule.Project.Default:
+                    filesWithCurrentArtworkName = files.Select(x => x).Where(x => String.Equals(x, artworkName + imageType, StringComparison.OrdinalIgnoreCase)).ToList();
+                    break;
+                case DropdownModule.Project.Levis:
+                    filesWithCurrentArtworkName = files.Select(x => x).Where(x => String.Equals(x, artworkName, StringComparison.OrdinalIgnoreCase)).ToList();
+                    break;
+            }
 
-            switch (filesWithCurrentArtworkName.Length)
+            switch (filesWithCurrentArtworkName.Count)
             {
                 case 0:
                     // Debug.LogError("File could not be found with following artwork name: " + artworkName + imageType);
@@ -230,7 +259,7 @@ namespace DefaultNamespace
                     textGameObj.GetComponent<TMP_Text>().text += "<color=green>"+ imageType +"</color>, ";
                     break;
             }
-            if (filesWithCurrentArtworkName.Length > 1)
+            if (filesWithCurrentArtworkName.Count > 1)
             {
                 // Debug.LogError("Multiple files found with the following name: " + artworkName + imageType);
                 textGameObj.GetComponent<TMP_Text>().text +=
@@ -253,7 +282,6 @@ namespace DefaultNamespace
             if (PlayerPrefs.GetString("COLUMN_HEADER") != null)
             {
                 var columnHeader = PlayerPrefs.GetString("COLUMN_HEADER");
-                Debug.LogError(columnHeader);
                 RestorePreviousInputFieldValue("InputFieldC", columnHeader);
             }
             if (PlayerPrefs.GetString("FILE_TYPE") != null)
@@ -279,9 +307,6 @@ namespace DefaultNamespace
             var field = FindSingleObjectByName(inputFieldObjName);
             var textObj = field.transform.GetChild(0).gameObject;
 
-            Debug.LogError(field.name);
-            Debug.LogError(textObj.name);
-            
             textObj.GetComponent<TMP_InputField>().text = storedValue;
         }
 
