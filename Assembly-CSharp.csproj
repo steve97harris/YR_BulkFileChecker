@@ -55,8 +55,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Dropdown\DropdownModule.cs" />
      <Compile Include="Assets\Scripts\FileChecker.cs" />
-     <Compile Include="Assets\Scripts\DropdownModule.cs" />
+     <Compile Include="Assets\Scripts\ComparisonChecker\ComparisonCheckerOptions.cs" />
+     <Compile Include="Assets\Scripts\RegularChecker\RegularCheckerOptions.cs" />
+     <Compile Include="Assets\Scripts\GeneralPrefabs\MainCanvas.cs" />
+     <Compile Include="Assets\Scripts\InputFields\ColumnHeaderInput.cs" />
+     <Compile Include="Assets\Scripts\InputFields\RepoInput.cs" />
+     <Compile Include="Assets\Scripts\InputFields\RenderServerInput.cs" />
+     <Compile Include="Assets\Scripts\InputFields\CsvInput.cs" />
+     <Compile Include="Assets\Scripts\InputFields\DesignerInput.cs" />
+     <Compile Include="Assets\Scripts\InputFields\FileTypeInput.cs" />
+     <Compile Include="Assets\Scripts\GeneralPrefabs\ContentArtwork.cs" />
+     <Compile Include="Assets\Scripts\ErrorManagement\Error101.cs" />
+     <Compile Include="Assets\Scripts\PlayerPreferences\PlayerPreferenceModule.cs" />
+     <Compile Include="Assets\Scripts\ErrorManagement\ErrorMessageFunctions.cs" />
+     <Compile Include="Assets\Scripts\FileCompare.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
@@ -79,31 +93,31 @@
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
  <Reference Include="Unity.Timeline.Editor">
- <HintPath>C:/Users/steve/Documents/Github/YR_BulkFileChecker/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
+ <HintPath>C:/YR_Software/Unity/dev/YR_BulkFileChecker/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.VSCode.Editor">
- <HintPath>C:/Users/steve/Documents/Github/YR_BulkFileChecker/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+ <HintPath>C:/YR_Software/Unity/dev/YR_BulkFileChecker/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.TextMeshPro.Editor">
- <HintPath>C:/Users/steve/Documents/Github/YR_BulkFileChecker/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
+ <HintPath>C:/YR_Software/Unity/dev/YR_BulkFileChecker/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.UI">
- <HintPath>C:/Users/steve/Documents/Github/YR_BulkFileChecker/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+ <HintPath>C:/YR_Software/Unity/dev/YR_BulkFileChecker/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Timeline">
- <HintPath>C:/Users/steve/Documents/Github/YR_BulkFileChecker/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
+ <HintPath>C:/YR_Software/Unity/dev/YR_BulkFileChecker/Library/ScriptAssemblies/Unity.Timeline.dll</HintPath>
  </Reference>
  <Reference Include="Unity.Rider.Editor">
- <HintPath>C:/Users/steve/Documents/Github/YR_BulkFileChecker/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
+ <HintPath>C:/YR_Software/Unity/dev/YR_BulkFileChecker/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.VisualStudio.Editor">
- <HintPath>C:/Users/steve/Documents/Github/YR_BulkFileChecker/Library/ScriptAssemblies/Unity.VisualStudio.Editor.dll</HintPath>
+ <HintPath>C:/YR_Software/Unity/dev/YR_BulkFileChecker/Library/ScriptAssemblies/Unity.VisualStudio.Editor.dll</HintPath>
  </Reference>
  <Reference Include="Unity.TextMeshPro">
- <HintPath>C:/Users/steve/Documents/Github/YR_BulkFileChecker/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
+ <HintPath>C:/YR_Software/Unity/dev/YR_BulkFileChecker/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.UI">
- <HintPath>C:/Users/steve/Documents/Github/YR_BulkFileChecker/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+ <HintPath>C:/YR_Software/Unity/dev/YR_BulkFileChecker/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.AIModule">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2020.1.3f1/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>

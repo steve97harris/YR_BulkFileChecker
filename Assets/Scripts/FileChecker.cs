@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using DefaultNamespace;
+using DefaultNamespace.InputFields;
 using TMPro;
 using UnityEngine;
 
@@ -14,81 +15,67 @@ namespace DefaultNamespace
     {
         public static DropdownModule.Project ProjectSelected = DropdownModule.Project.Default;
         
-        private string _repoPath = "";
-        private string _csvFilePath = "";
-        private string _columnHeader = "";
-        private string _fileType = "";
-
-        private static GameObject _mainCanvas = null;
-
+        public static string RepoPath = "";
+        public static string CsvFilePath = "";
+        public static string ColumnHeader = "";
+        public static string FileType = "";
+        public static string DesignerContentPath = "";
+        public static string RenderServerContentPath = "";
+        
         private void Start()
         {
-            _mainCanvas = Resources.Load<GameObject>(@"Prefabs\CanvasA");
-            _mainCanvas = Instantiate(_mainCanvas);
-            GetPlayerPrefs();
+            var mainCanvas = Resources.Load<GameObject>(@"Prefabs\CanvasA");
+            mainCanvas = Instantiate(mainCanvas);
         }
 
-        public void InputValueRepoPath(string path)
+        public void InputValueRepoPath(string value)
         {
-            _repoPath = path;
+            RepoPath = value;
         }
 
-        public void InputValueCsvPath(string path)
+        public void InputValueCsvPath(string value)
         {
-            _csvFilePath = path;
+            CsvFilePath = value;
         }
         
-        public void InputValueColumnHeader(string columnHeader)
+        public void InputValueColumnHeader(string value)
         {
-            _columnHeader = columnHeader;
+            ColumnHeader = value;
         }
 
-        public void InputValueFileType(string fileType)
+        public void InputValueFileType(string value)
         {
-            _fileType = fileType;
+            FileType = value;
         }
 
-        private void DisplayError(string error)
+        public void InputValueDesignerPath(string value)
         {
-            var errorObj = FindSingleObjectByName("error101");
-            if (errorObj == null)
-            {
-                errorObj = Resources.Load<GameObject>(@"Prefabs\error101");
-                errorObj = Instantiate(errorObj, _mainCanvas.transform);
-            }
-
-            if (errorObj.GetComponent<TMP_Text>().text == "_error_")
-                errorObj.GetComponent<TMP_Text>().text = error;
-            else
-                errorObj.GetComponent<TMP_Text>().text += Environment.NewLine + error;
-
-            errorObj.SetActive(true);
+            DesignerContentPath = value;
         }
 
-        public void ExitErrorMessage()
+        public void InputValueRenderServerPath(string value)
         {
-            var errorObj = FindSingleObjectByName("error101");
-            DestroyImmediate(errorObj, true);
+            RenderServerContentPath = value;
         }
 
         public void CheckFiles()
         {
-            SetPlayerPrefs();
+            PlayerPreferenceModule.Instance.SetPlayerPrefs(PlayerPreferenceModule.Function.Regular);
             
-            var csvFileList = LoadCsvFileViaPath(_csvFilePath);
+            var csvFileList = LoadCsvFileViaPath(CsvFilePath);
 
             if (csvFileList.Count == 0)
             {
                 Debug.LogError("CsvFile returned empty");
-                DisplayError("CsvFile returned empty, try another path");
+                ErrorMessageFunctions.Instance.DisplayError("CsvFile returned empty, try another path");
                 return;
             }
 
-            var artworkIndex = GetColumnIndex(csvFileList, _columnHeader);
+            var artworkIndex = GetColumnIndex(csvFileList, ColumnHeader);
             if (artworkIndex == -1)
             {
-                Debug.LogError("No column found with header: " + _columnHeader);
-                DisplayError("No column found with header: " + _columnHeader);
+                Debug.LogError("No column found with header: " + ColumnHeader);
+                ErrorMessageFunctions.Instance.DisplayError("No column found with header: " + ColumnHeader);
                 return;
             }
 
@@ -96,15 +83,15 @@ namespace DefaultNamespace
             
             var artworkNameList = GetArtworkNameList(csvFileList, artworkIndex, subCategoryIndex);
 
-            var fileType = "*." + _fileType;
-            var files = GetRepositoryFileNames(_repoPath, fileType);
+            var fileType = "*." + FileType;
+            var files = GetRepositoryFileNames(RepoPath, fileType);
 
             for (int i = 0; i < files.Length; i++)
             {
                 Debug.Log(files[i]);
             }
-            
-            var content = FindSingleObjectByName("ContentArtwork");
+
+            var content = ContentArtwork.Instance.gameObject;
             foreach (Transform child in content.transform)
             {
                 Destroy(child.gameObject);
@@ -135,12 +122,152 @@ namespace DefaultNamespace
 
                 var subCategory = artworkNameList[i].Split(',')[1];
                 textGameObj.GetComponent<TMP_Text>().text += " " + "(" + subCategory + ")";
-
                 Instantiate(textGameObj, content.transform);
             }
         }
 
-        
+        public void CompareFiles()
+        {
+            PlayerPreferenceModule.Instance.SetPlayerPrefs(PlayerPreferenceModule.Function.Comparison);
+            
+            var content = ContentArtwork.Instance.gameObject;
+            foreach (Transform child in content.transform)
+            {
+                Destroy(child.gameObject);
+            }
+            
+            var textGameObj = Resources.Load<GameObject>("Prefabs/ArtworkCheckerTextTemplate");
+            
+            // Create two identical or different temporary folders
+            // on a local drive and change these file paths.  
+            string pathA = DesignerContentPath;  
+            string pathB = RenderServerContentPath;
+
+            System.IO.DirectoryInfo designerDir = new System.IO.DirectoryInfo(pathA);  
+            System.IO.DirectoryInfo renderDir = new System.IO.DirectoryInfo(pathB);  
+  
+            // Take a snapshot of the file system.  
+            IEnumerable<System.IO.FileInfo> designerList = designerDir.GetFiles("*.*", System.IO.SearchOption.AllDirectories);  
+            IEnumerable<System.IO.FileInfo> renderList = renderDir.GetFiles("*.*", System.IO.SearchOption.AllDirectories);
+
+            //A custom file comparer defined below  
+            FileCompare myFileCompare = new FileCompare();  
+  
+            // This query determines whether the two folders contain  
+            // identical file lists, based on the custom file comparer  
+            // that is defined in the FileCompare class.  
+            // The query executes immediately because it returns a bool.  
+            bool areIdentical = designerList.SequenceEqual(renderList, myFileCompare);  
+  
+            if (areIdentical)  
+            {  
+                Debug.LogError("the two folders are the same");  
+                InstantiateTextObj(textGameObj, content, "The 2 folders are the same");
+            }  
+            else  
+            {  
+                Debug.LogError("The two folders are not the same");  
+            }  
+  
+            // Find the common files. It produces a sequence and doesn't
+            // execute until the foreach statement.  
+            var queryCommonFiles = designerList.Intersect(renderList, myFileCompare);
+
+            var commonFiles = queryCommonFiles as FileInfo[] ?? queryCommonFiles.ToArray();
+            
+            if (commonFiles.Any())  
+            {  
+                Debug.Log("The following files are in both folders:");  
+                foreach (var v in commonFiles)  
+                {  
+                    Debug.Log(v.Name + Environment.NewLine + v.FullName); //shows which items end up in result list  
+                }  
+            }  
+            else  
+            {  
+                Debug.LogError("There are no common files in the two folders.");  
+            }
+
+            // Find the set difference between the two folders.  
+            // For this example we only check one way.  
+            var queryList1Only = (from file in designerList  
+                                  select file).Except(renderList, myFileCompare);
+
+            var multipleFileNamesList = new List<string>();
+  
+            Debug.LogError("The following files are in the designer but not the render server:");  
+            foreach (var fileInfo in queryList1Only)  
+            {
+                if (fileInfo.Name.EndsWith("_MSK.png") || fileInfo.Name.EndsWith("_THM.png"))
+                    continue;
+                
+                if (fileInfo.Name.EndsWith("_SCR.png"))
+                {
+                    Debug.LogError("File not found, checking for PRN equivalent; " + fileInfo.Name);
+                    CheckForPrnEquivalent("_SCR.png", fileInfo, renderList, multipleFileNamesList, textGameObj, content);
+                }
+                else if (fileInfo.Name.EndsWith("_PNT.png"))
+                {
+                    Debug.LogError("File not found, checking for PRN equivalent; " + fileInfo.Name);
+                    CheckForPrnEquivalent("_PNT.png", fileInfo, renderList, multipleFileNamesList, textGameObj, content);
+                }
+                else if (fileInfo.Name.EndsWith("_PRN.png"))
+                {
+                    Debug.LogError("File not found: " + fileInfo.Name + Environment.NewLine + fileInfo.FullName);
+                    
+                    if (multipleFileNamesList.Contains(fileInfo.Name)) 
+                        continue;
+                    
+                    InstantiateTextObj(textGameObj, content, "<color=red>File not found in render server: " + fileInfo.Name + "</color>");
+                    multipleFileNamesList.Add(fileInfo.Name);
+                }
+                else
+                {
+                    Debug.LogError("File not found: " + fileInfo.Name + Environment.NewLine + fileInfo.FullName);
+                    
+                    if (multipleFileNamesList.Contains(fileInfo.Name)) 
+                        continue;
+                    
+                    InstantiateTextObj(textGameObj, content, "File not found in render server: " + fileInfo.Name + "[ " + fileInfo.FullName + " ]");
+                    multipleFileNamesList.Add(fileInfo.Name);
+                }
+            }
+        }
+
+        private void CheckForPrnEquivalent(string yrFileType, FileInfo fileInfo, IEnumerable<FileInfo> renderList, List<string> multipleFileNamesList, GameObject textGameObj, GameObject content)
+        {
+            var printFileName = fileInfo.Name.Replace(yrFileType, "_PRN.png");
+            var printFileList = renderList.Select(x => x)
+                .Where(x => String.Equals(x.Name, printFileName, StringComparison.OrdinalIgnoreCase)).ToList();
+                    
+            if (printFileList.Count == 0)
+            {
+                Debug.LogError("File not found: " + printFileName);
+                InstantiateTextObj(textGameObj, content, "<color=red>PRN equivalent file not found: " + printFileName + "</color>");
+            }
+
+            if (printFileList.Count == 1)
+            {
+                Debug.Log("File found: " + printFileName);
+                // InstantiateTextObj(textGameObj, content, "<color=green>PRN equivalent file found: " + printFileName + " (original file: " + fileInfo.Name + ")</color>");
+            }
+
+            if (printFileList.Count <= 1) 
+                return;
+                    
+            if (multipleFileNamesList.Contains(printFileName)) 
+                return;
+                        
+            Debug.LogError("Multiple files found with following name in RenderServer: " + printFileName);
+            multipleFileNamesList.Add(printFileName);
+            InstantiateTextObj(textGameObj, content, "<color=yellow>Multiple PRN equivalent files: " + printFileName + " [" + printFileList.Count + "]" + "</color>");
+        }
+
+        private void InstantiateTextObj(GameObject textGameObject, GameObject parent, string text)
+        {
+            textGameObject.GetComponent<TMP_Text>().text = text;
+            Instantiate(textGameObject, parent.transform);
+        }
 
         private string[] GetRepositoryFileNames(string repoPath, string fileType)
         {
@@ -173,7 +300,7 @@ namespace DefaultNamespace
                 if (subCategoryIndex != -1)
                     subCategory = split[subCategoryIndex];
     
-                if (artworkName == _columnHeader)
+                if (artworkName == ColumnHeader)
                     continue;
 
                 if (!artworkNameList.Contains(artworkName))
@@ -211,7 +338,7 @@ namespace DefaultNamespace
         {
             if (!File.Exists(filePath))
             {
-                DisplayError("CSV File Not Found.");
+                ErrorMessageFunctions.Instance.DisplayError("CSV File Not Found.");
                 return null;
             }
             
@@ -224,12 +351,6 @@ namespace DefaultNamespace
             }
 
             return searchList;
-        }
-        
-        public static GameObject FindSingleObjectByName(string objectName)
-        {
-            var objects = Resources.FindObjectsOfTypeAll<GameObject>().Where(obj => obj.name == objectName).ToArray();
-            return objects.Length == 0 ? null : objects[0];
         }
 
         private void CheckArtwork(DropdownModule.Project project, string[] files, List<string> artworkNameList, int i, GameObject textGameObj, string imageType)
@@ -263,54 +384,9 @@ namespace DefaultNamespace
             {
                 // Debug.LogError("Multiple files found with the following name: " + artworkName + imageType);
                 textGameObj.GetComponent<TMP_Text>().text +=
-                    "<color=yellow>" + imageType + "</color>, ";
+                    "<color=yellow>" + imageType + "</color> " + "["+ filesWithCurrentArtworkName.Count + "], ";
             }
         }
-
-        #region InputField
-
-        private void SetPlayerPrefs()
-        {
-            PlayerPrefs.SetString("COLUMN_HEADER", _columnHeader);
-            PlayerPrefs.SetString("FILE_TYPE", _fileType);
-            PlayerPrefs.SetString("REPO_PATH", _repoPath);
-            PlayerPrefs.SetString("CSV_PATH", _csvFilePath);
-        }
-
-        private void GetPlayerPrefs()
-        {
-            if (PlayerPrefs.GetString("COLUMN_HEADER") != null)
-            {
-                var columnHeader = PlayerPrefs.GetString("COLUMN_HEADER");
-                RestorePreviousInputFieldValue("InputFieldC", columnHeader);
-            }
-            if (PlayerPrefs.GetString("FILE_TYPE") != null)
-            {
-                var fileType = PlayerPrefs.GetString("FILE_TYPE");
-                RestorePreviousInputFieldValue("InputFieldD", fileType);
-            }
-            if (PlayerPrefs.GetString("REPO_PATH") != null)
-            {
-                var repoPath = PlayerPrefs.GetString("REPO_PATH");
-                RestorePreviousInputFieldValue("InputFieldA", repoPath);
-            }
-            if (PlayerPrefs.GetString("CSV_PATH") != null)
-            {
-                var csvPath = PlayerPrefs.GetString("CSV_PATH");
-                RestorePreviousInputFieldValue("InputFieldB", csvPath);
-            }
-        }
-        
-
-        private void RestorePreviousInputFieldValue(string inputFieldObjName, string storedValue)
-        {
-            var field = FindSingleObjectByName(inputFieldObjName);
-            var textObj = field.transform.GetChild(0).gameObject;
-
-            textObj.GetComponent<TMP_InputField>().text = storedValue;
-        }
-
-        #endregion
     }
 }
 
