@@ -21,12 +21,17 @@ namespace DefaultNamespace
         public static string FileType = "";
         public static string DesignerContentPath = "";
         public static string RenderServerContentPath = "";
+
+        private const string CANVAS_A_PATH = "Prefabs/CanvasA";
+        private const string FILE_INFO_TEMPLATE = "Prefabs/ArtworkCheckerTextTemplate";
         
         private void Start()
         {
-            var mainCanvas = Resources.Load<GameObject>(@"Prefabs\CanvasA");
-            mainCanvas = Instantiate(mainCanvas);
+            var mainCanvas = Resources.Load<GameObject>(CANVAS_A_PATH);
+            Instantiate(mainCanvas);
         }
+
+        #region Input Field Values
 
         public void InputValueRepoPath(string value)
         {
@@ -57,12 +62,19 @@ namespace DefaultNamespace
         {
             RenderServerContentPath = value;
         }
+        
+        #endregion
 
+        #region Regular File Check
+        
         public void CheckFiles()
         {
             PlayerPreferenceModule.Instance.SetPlayerPrefs(PlayerPreferenceModule.Function.Regular);
             
             var csvFileList = LoadCsvFileViaPath(CsvFilePath);
+            
+            if (csvFileList == null)
+                return;
 
             if (csvFileList.Count == 0)
             {
@@ -102,7 +114,7 @@ namespace DefaultNamespace
                 "_MSK", "_PRN", "_SCR", "_THM"
             };
 
-            var textGameObj = Resources.Load<GameObject>("Prefabs/ArtworkCheckerTextTemplate");
+            var textGameObj = Resources.Load<GameObject>(FILE_INFO_TEMPLATE);
             for (int i = 0; i < artworkNameList.Count; i++)
             {
                 var artworkName = artworkNameList[i].Split(',')[0];
@@ -125,7 +137,11 @@ namespace DefaultNamespace
                 Instantiate(textGameObj, content.transform);
             }
         }
+        
+        #endregion
 
+        #region Compare File Check
+        
         public void CompareFiles()
         {
             PlayerPreferenceModule.Instance.SetPlayerPrefs(PlayerPreferenceModule.Function.Comparison);
@@ -136,7 +152,7 @@ namespace DefaultNamespace
                 Destroy(child.gameObject);
             }
             
-            var textGameObj = Resources.Load<GameObject>("Prefabs/ArtworkCheckerTextTemplate");
+            var textGameObj = Resources.Load<GameObject>(FILE_INFO_TEMPLATE);
             
             // Create two identical or different temporary folders
             // on a local drive and change these file paths.  
@@ -162,7 +178,7 @@ namespace DefaultNamespace
             if (areIdentical)  
             {  
                 Debug.LogError("the two folders are the same");  
-                InstantiateTextObj(textGameObj, content, "The 2 folders are the same");
+                InstantiateTextObj(textGameObj, content, "The 2 folders are the same", null, null, null);
             }  
             else  
             {  
@@ -218,7 +234,7 @@ namespace DefaultNamespace
                     if (multipleFileNamesList.Contains(fileInfo.Name)) 
                         continue;
                     
-                    InstantiateTextObj(textGameObj, content, "<color=red>File not found in render server: " + fileInfo.Name + "</color>");
+                    InstantiateTextObj(textGameObj, content, "<color=red>File not found in render server: " + fileInfo.Name + "</color>", fileInfo.Name, null, null);
                     multipleFileNamesList.Add(fileInfo.Name);
                 }
                 else
@@ -228,22 +244,24 @@ namespace DefaultNamespace
                     if (multipleFileNamesList.Contains(fileInfo.Name)) 
                         continue;
                     
-                    InstantiateTextObj(textGameObj, content, "File not found in render server: " + fileInfo.Name + "[ " + fileInfo.FullName + " ]");
+                    InstantiateTextObj(textGameObj, content, "File not found in render server: " + fileInfo.Name, fileInfo.Name, null, null);
                     multipleFileNamesList.Add(fileInfo.Name);
                 }
             }
         }
+        
+        #endregion
 
         private void CheckForPrnEquivalent(string yrFileType, FileInfo fileInfo, IEnumerable<FileInfo> renderList, List<string> multipleFileNamesList, GameObject textGameObj, GameObject content)
         {
             var printFileName = fileInfo.Name.Replace(yrFileType, "_PRN.png");
             var printFileList = renderList.Select(x => x)
-                .Where(x => String.Equals(x.Name, printFileName, StringComparison.OrdinalIgnoreCase)).ToList();
+                .Where(x => string.Equals(x.Name, printFileName, StringComparison.OrdinalIgnoreCase)).ToList();
                     
             if (printFileList.Count == 0)
             {
                 Debug.LogError("File not found: " + printFileName);
-                InstantiateTextObj(textGameObj, content, "<color=red>PRN equivalent file not found: " + printFileName + "</color>");
+                InstantiateTextObj(textGameObj, content, "<color=red>PRN file not found: " + printFileName + "</color>", printFileName, null, fileInfo.Name);
             }
 
             if (printFileList.Count == 1)
@@ -260,12 +278,16 @@ namespace DefaultNamespace
                         
             Debug.LogError("Multiple files found with following name in RenderServer: " + printFileName);
             multipleFileNamesList.Add(printFileName);
-            InstantiateTextObj(textGameObj, content, "<color=yellow>Multiple PRN equivalent files: " + printFileName + " [" + printFileList.Count + "]" + "</color>");
+            InstantiateTextObj(textGameObj, content, "<color=yellow>Multiple files found: " + printFileName + " [" + printFileList.Count + "]" + "</color>", printFileName, printFileList, fileInfo.Name);
         }
 
-        private void InstantiateTextObj(GameObject textGameObject, GameObject parent, string text)
+        private void InstantiateTextObj(GameObject textGameObject, GameObject parent, string text, string fileName, List<FileInfo> printFileList, string originalFileName)
         {
             textGameObject.GetComponent<TMP_Text>().text = text;
+            textGameObject.GetComponent<ArtworkCheckerTextTemplate>().fileName = fileName;
+            textGameObject.GetComponent<ArtworkCheckerTextTemplate>().originalFileNamePath = originalFileName;
+            textGameObject.GetComponent<ArtworkCheckerTextTemplate>().FilePathList = printFileList;
+
             Instantiate(textGameObject, parent.transform);
         }
 

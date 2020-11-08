@@ -71,6 +71,7 @@
      <Compile Include="Assets\Scripts\PlayerPreferences\PlayerPreferenceModule.cs" />
      <Compile Include="Assets\Scripts\ErrorManagement\ErrorMessageFunctions.cs" />
      <Compile Include="Assets\Scripts\FileCompare.cs" />
+     <Compile Include="Assets\Scripts\GeneralPrefabs\ArtworkCheckerTextTemplate.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />

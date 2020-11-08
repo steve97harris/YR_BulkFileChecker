@@ -9,6 +9,8 @@ namespace DefaultNamespace
     {
         public static ErrorMessageFunctions Instance { get; set; }
 
+        private const string ERROR101_PREFAB = "Prefabs/error101";
+        
         private void Awake()
         {
             if (Instance == null)
@@ -17,13 +19,9 @@ namespace DefaultNamespace
 
         public void DisplayError(string error)
         {
-            var errorObj = Error101.Instance.gameObject;
-            if (errorObj == null)
-            {
-                errorObj = Resources.Load<GameObject>(@"Prefabs\error101");
-                errorObj = Instantiate(errorObj, MainCanvas.Instance.transform);
-            }
-
+            var errorObj = Resources.Load<GameObject>(ERROR101_PREFAB);
+            errorObj = Instantiate(errorObj, MainCanvas.Instance.transform);
+            
             if (errorObj.GetComponent<TMP_Text>().text == "_error_")
                 errorObj.GetComponent<TMP_Text>().text = error;
             else
