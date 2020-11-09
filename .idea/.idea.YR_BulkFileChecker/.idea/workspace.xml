@@ -22,25 +22,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1ce4e581-0281-4dd3-8362-48f4614f5d92" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Resources/Prefabs/ErrorMessageFunctions.prefab" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Resources/Prefabs/ErrorMessageFunctions.prefab.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/GeneralPrefabs/ArtworkCheckerTextTemplate.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/GeneralPrefabs/ArtworkCheckerTextTemplate.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.YR_BulkFileChecker/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.YR_BulkFileChecker/.idea/contentModel.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.YR_BulkFileChecker/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.YR_BulkFileChecker/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assembly-CSharp.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Assembly-CSharp.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/ArtworkCheckerTextTemplate.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Prefabs/ArtworkCheckerTextTemplate.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/BulkFileChecker.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/BulkFileChecker.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/ErrorManagement/ErrorMessageFunctions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/ErrorManagement/ErrorMessageFunctions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/FileChecker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/FileChecker.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Library/InspectorExpandedItems.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Library/InspectorExpandedItems.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Library/SceneVisibilityState.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Library/SceneVisibilityState.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Library/ScriptAssemblies/Assembly-CSharp.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Library/ScriptAssemblies/Assembly-CSharp.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Library/ScriptAssemblies/Assembly-CSharp.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Library/ScriptAssemblies/Assembly-CSharp.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Library/StateCache/MainStageHierarchy/e6/e6df83af2da66363cbf40079a8093c66.json" beforeDir="false" afterPath="$PROJECT_DIR$/Library/StateCache/MainStageHierarchy/e6/e6df83af2da66363cbf40079a8093c66.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Library/StateCache/PrefabStageHierarchy/61/61d757ca76e76febcb30573c556c59f1.json" beforeDir="false" afterPath="$PROJECT_DIR$/Library/StateCache/PrefabStageHierarchy/61/61d757ca76e76febcb30573c556c59f1.json" afterDir="false" />
-    </list>
+    <list default="true" id="1ce4e581-0281-4dd3-8362-48f4614f5d92" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -152,7 +134,7 @@
       <workItem from="1604501410748" duration="6389000" />
       <workItem from="1604584017390" duration="839000" />
       <workItem from="1604663923528" duration="779000" />
-      <workItem from="1604739562619" duration="30117000" />
+      <workItem from="1604739562619" duration="30596000" />
     </task>
     <servers />
   </component>
