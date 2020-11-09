@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using DefaultNamespace;
 using DefaultNamespace.InputFields;
@@ -24,10 +25,13 @@ namespace DefaultNamespace
         {
             if (Instance == null)
                 Instance = this;
+
+            StartCoroutine(RetrievePreviousInputValues());
         }
 
-        private void Start()
+        private IEnumerator RetrievePreviousInputValues()
         {
+            yield return new WaitForSeconds(0.1f);
             GetPlayerPrefs(Function.Regular);
         }
 
@@ -53,6 +57,8 @@ namespace DefaultNamespace
                     PlayerPrefs.SetString(DesignerPathKey, FileChecker.DesignerContentPath);
                     PlayerPrefs.SetString(RenderServerPathKey, FileChecker.RenderServerContentPath);
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(function), function, null);
             }
             
         }
@@ -62,59 +68,48 @@ namespace DefaultNamespace
             switch (function)
             {
                 case Function.Regular:
-                    var columnHeader = PlayerPrefs.GetString(ColumnHeaderKey);
-                    var fileType = PlayerPrefs.GetString(FileTypeKey);
-                    var repoPath = PlayerPrefs.GetString(RepoPathKey);
-                    var csvPath = PlayerPrefs.GetString(CsvPathKey);
-                    
-                    if (columnHeader != null)
+                    var inputMap = new Dictionary<string, GameObject>
                     {
-                        if (ColumnHeaderInput.Instance != null)
-                            RestorePreviousInputFieldValue(ColumnHeaderInput.Instance.gameObject, columnHeader);
-                    }
-                    if (fileType != null)
+                        {ColumnHeaderKey, ColumnHeaderInput.Instance.gameObject},
+                        {FileTypeKey, FileTypeInput.Instance.gameObject},
+                        {RepoPathKey, RepoInput.Instance.gameObject},
+                        {CsvPathKey, CsvInput.Instance.gameObject}
+                    };
+                    foreach (var pair in inputMap)
                     {
-                        if (FileTypeInput.Instance != null)
-                            RestorePreviousInputFieldValue(FileTypeInput.Instance.gameObject, fileType);
-                    }
-                    if (repoPath != null)
-                    {
-                        if (RepoInput.Instance != null)
-                            RestorePreviousInputFieldValue(RepoInput.Instance.gameObject, repoPath);
-                    }
-                    if (csvPath != null)
-                    {
-                        if (CsvInput.Instance != null)
-                            RestorePreviousInputFieldValue(CsvInput.Instance.gameObject, csvPath);
+                        GetPlayerPrefsHelper(pair.Key, pair.Value);
                     }
                     break;
                 case Function.Comparison:
-                    var designerPath = PlayerPrefs.GetString(DesignerPathKey);
-                    var renderPath = PlayerPrefs.GetString(RenderServerPathKey);
-
-                    if (designerPath != null)
+                    var comparisonInputMap = new Dictionary<string, GameObject>
                     {
-                        if (DesignerInput.Instance != null)
-                        {
-                            RestorePreviousInputFieldValue(DesignerInput.Instance.gameObject, designerPath);
-                        }
-                    }
-                    if (renderPath != null)
+                        {DesignerPathKey, DesignerInput.Instance.gameObject},
+                        {RenderServerPathKey, RenderServerInput.Instance.gameObject}
+                    };
+                    foreach (var pair in comparisonInputMap)
                     {
-                        if (RenderServerInput.Instance != null)
-                        {
-                            RestorePreviousInputFieldValue(RenderServerInput.Instance.gameObject, renderPath);
-                        }
+                        GetPlayerPrefsHelper(pair.Key, pair.Value);
                     }
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(function), function, null);
             }
         }
 
-        private void RestorePreviousInputFieldValue(GameObject inputFieldObj, string storedValue)
+        private void GetPlayerPrefsHelper(string playerPrefsKey, GameObject inputField)
+        {
+            var preferenceValue = PlayerPrefs.GetString(playerPrefsKey);
+            if (preferenceValue != null)
+                RestoreInputValue(inputField, preferenceValue);
+        }
+
+        private void RestoreInputValue(GameObject inputFieldObj, string storedValue)
         {
             var textObj = inputFieldObj.transform.GetChild(0).gameObject;
 
             textObj.GetComponent<TMP_InputField>().text = storedValue;
+            
+            Debug.LogError(storedValue);
         }
 
         #endregion

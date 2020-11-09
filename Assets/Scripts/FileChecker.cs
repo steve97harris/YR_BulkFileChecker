@@ -252,6 +252,8 @@ namespace DefaultNamespace
         
         #endregion
 
+        #region Private Methods
+        
         private void CheckForPrnEquivalent(string yrFileType, FileInfo fileInfo, IEnumerable<FileInfo> renderList, List<string> multipleFileNamesList, GameObject textGameObj, GameObject content)
         {
             var printFileName = fileInfo.Name.Replace(yrFileType, "_PRN.png");
@@ -409,6 +411,8 @@ namespace DefaultNamespace
                     "<color=yellow>" + imageType + "</color> " + "["+ filesWithCurrentArtworkName.Count + "], ";
             }
         }
+        
+        #endregion
     }
 }
 

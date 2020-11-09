@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace DefaultNamespace.InputFields
+namespace DefaultNamespace
 {
     public class ColumnHeaderInput : MonoBehaviour
     {
