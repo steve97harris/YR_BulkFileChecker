@@ -211,12 +211,34 @@ namespace DefaultNamespace
 
             var multipleFileNamesList = new List<string>();
   
+            LoadBasicData(queryList1Only, textGameObj, content);
+            // LoadSpecialFilter(queryList1Only, renderList, multipleFileNamesList, textGameObj, content);
+            
+        }
+        
+        #endregion
+
+        #region Private Methods
+
+        private void LoadBasicData(IEnumerable<FileInfo> queryList1Only, GameObject textGameObj, GameObject content)
+        {
+            foreach (var fileInfo in queryList1Only)
+            {
+                if (!fileInfo.Name.EndsWith(".png"))
+                    continue;
+                
+                Debug.LogError(fileInfo.Name + Environment.NewLine + fileInfo.FullName);
+                InstantiateTextObj(textGameObj, content, "<color=red>File not found in render server: " + fileInfo.Name + "</color>", fileInfo.Name, null, null);
+            }
+        }
+        private void LoadSpecialFilter(IEnumerable<FileInfo> queryList1Only, IEnumerable<FileInfo> renderList, List<string> multipleFileNamesList, GameObject textGameObj, GameObject content)
+        {
             Debug.LogError("The following files are in the designer but not the render server:");  
             foreach (var fileInfo in queryList1Only)  
             {
-                if (fileInfo.Name.EndsWith("_MSK.png") || fileInfo.Name.EndsWith("_THM.png"))
+                if (!fileInfo.Name.EndsWith(".png"))
                     continue;
-                
+
                 if (fileInfo.Name.EndsWith("_SCR.png"))
                 {
                     Debug.LogError("File not found, checking for PRN equivalent; " + fileInfo.Name);
@@ -249,11 +271,6 @@ namespace DefaultNamespace
                 }
             }
         }
-        
-        #endregion
-
-        #region Private Methods
-        
         private void CheckForPrnEquivalent(string yrFileType, FileInfo fileInfo, IEnumerable<FileInfo> renderList, List<string> multipleFileNamesList, GameObject textGameObj, GameObject content)
         {
             var printFileName = fileInfo.Name.Replace(yrFileType, "_PRN.png");
