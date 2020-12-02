@@ -22,6 +22,7 @@
           <e p="GeneralPrefabs" t="Include">
             <e p="ArtworkCheckerTextTemplate.cs" t="Include" />
             <e p="ContentArtwork.cs" t="Include" />
+            <e p="FileInfoPanel.cs" t="Include" />
             <e p="MainCanvas.cs" t="Include" />
           </e>
           <e p="InputFields" t="Include">

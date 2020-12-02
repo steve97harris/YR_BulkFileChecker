@@ -23,7 +23,8 @@ namespace DefaultNamespace
         public static string RenderServerContentPath = "";
 
         private const string CANVAS_A_PATH = "Prefabs/CanvasA";
-        private const string FILE_INFO_TEMPLATE = "Prefabs/ArtworkCheckerTextTemplate";
+        private const string FILE_INFO_TEMPLATE = "Prefabs/FileInfoButton";
+        public const string FILE_INFO_PANEL = "Prefabs/FileInformationPanel";
         
         private void Start()
         {
@@ -152,7 +153,7 @@ namespace DefaultNamespace
                 Destroy(child.gameObject);
             }
             
-            var textGameObj = Resources.Load<GameObject>(FILE_INFO_TEMPLATE);
+            var fileInfoButton = Resources.Load<GameObject>(FILE_INFO_TEMPLATE);
             
             // Create two identical or different temporary folders
             // on a local drive and change these file paths.  
@@ -178,7 +179,7 @@ namespace DefaultNamespace
             if (areIdentical)  
             {  
                 Debug.LogError("the two folders are the same");  
-                InstantiateTextObj(textGameObj, content, "The 2 folders are the same", null, null, null);
+                InstantiateTextObj(fileInfoButton, content, "The 2 folders are the same", null, null, null);
             }  
             else  
             {  
@@ -211,7 +212,7 @@ namespace DefaultNamespace
 
             var multipleFileNamesList = new List<string>();
   
-            LoadBasicData(queryList1Only, textGameObj, content);
+            LoadBasicData(queryList1Only, fileInfoButton, content);
             // LoadSpecialFilter(queryList1Only, renderList, multipleFileNamesList, textGameObj, content);
             
         }
@@ -228,9 +229,20 @@ namespace DefaultNamespace
                     continue;
                 
                 Debug.LogError(fileInfo.Name + Environment.NewLine + fileInfo.FullName);
-                InstantiateTextObj(textGameObj, content, "<color=red>File not found in render server: " + fileInfo.Name + "</color>", fileInfo.Name, null, null);
+                InstantiateTextObj(textGameObj, content, "File not found in render server: " + fileInfo.Name, fileInfo.Name, null, fileInfo.FullName);
             }
         }
+        
+        private void InstantiateTextObj(GameObject fileInfoButton, GameObject parent, string text, string fileName, List<FileInfo> printFileList, string originalFileName)
+        {
+            fileInfoButton.transform.GetChild(0).GetComponent<TMP_Text>().text = text;
+            fileInfoButton.GetComponent<ArtworkCheckerTextTemplate>().fileName = fileName;
+            fileInfoButton.GetComponent<ArtworkCheckerTextTemplate>().fullFilePath = originalFileName;
+            fileInfoButton.GetComponent<ArtworkCheckerTextTemplate>().FilePathList = printFileList;
+
+            Instantiate(fileInfoButton, parent.transform);
+        }
+        
         private void LoadSpecialFilter(IEnumerable<FileInfo> queryList1Only, IEnumerable<FileInfo> renderList, List<string> multipleFileNamesList, GameObject textGameObj, GameObject content)
         {
             Debug.LogError("The following files are in the designer but not the render server:");  
@@ -298,16 +310,6 @@ namespace DefaultNamespace
             Debug.LogError("Multiple files found with following name in RenderServer: " + printFileName);
             multipleFileNamesList.Add(printFileName);
             InstantiateTextObj(textGameObj, content, "<color=yellow>Multiple files found: " + printFileName + " [" + printFileList.Count + "]" + "</color>", printFileName, printFileList, fileInfo.Name);
-        }
-
-        private void InstantiateTextObj(GameObject textGameObject, GameObject parent, string text, string fileName, List<FileInfo> printFileList, string originalFileName)
-        {
-            textGameObject.GetComponent<TMP_Text>().text = text;
-            textGameObject.GetComponent<ArtworkCheckerTextTemplate>().fileName = fileName;
-            textGameObject.GetComponent<ArtworkCheckerTextTemplate>().originalFileNamePath = originalFileName;
-            textGameObject.GetComponent<ArtworkCheckerTextTemplate>().FilePathList = printFileList;
-
-            Instantiate(textGameObject, parent.transform);
         }
 
         private string[] GetRepositoryFileNames(string repoPath, string fileType)
